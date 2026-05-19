@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회계의 ABC, 계정과목 알아보기</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      background: #EFF3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #1B3C6E 0%, #2A5FA8 100%);
+      color: #fff;
+      text-align: center;
+      padding: 2.8rem 1.5rem 2.2rem;
+    }
+    header .tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 0.3rem 0.9rem;
+      margin-bottom: 0.9rem;
+    }
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── Container ── */
+    .container {
+      width: 100%;
+      max-width: 680px;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ── Progress ── */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.6rem;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 7px;
+      background: #D6DFE9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2A5FA8, #4A90D9);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+    .progress-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #5A7A9F;
+      white-space: nowrap;
+    }
+
+    /* ── Question card ── */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(30,60,110,0.09);
+    }
+
+    /* ── Principle toggle ── */
+    .principle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #FFF8E1;
+      border: 1.5px solid #FFB300;
+      color: #7A5100;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .principle-btn:hover { background: #FFF0B3; }
+
+    .principle-box {
+      display: none;
+      background: #FFFBF0;
+      border-left: 4px solid #FFB300;
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.2rem;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: #5C4A00;
+      margin-bottom: 1.2rem;
+    }
+    .principle-box.open { display: block; }
+
+    /* ── Question text ── */
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.75;
+      color: #1A2D4A;
+      margin-bottom: 1.4rem;
+    }
+
+    /* ── Choices ── */
+    .choices { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .choice {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.1rem;
+      border: 2px solid #DDE5EF;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #2A3D5C;
+      text-align: left;
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .choice:hover:not(:disabled) {
+      border-color: #2A5FA8;
+      background: #F0F6FF;
+    }
+    .choice .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: #E8EEFA;
+      color: #2A5FA8;
+      font-weight: 800;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+    }
+    .choice.correct {
+      border-color: #22A77A;
+      background: #F0FBF7;
+    }
+    .choice.correct .badge {
+      background: #22A77A;
+      color: #fff;
+    }
+    .choice.wrong {
+      border-color: #E05252;
+      background: #FFF5F5;
+    }
+    .choice.wrong .badge {
+      background: #E05252;
+      color: #fff;
+    }
+    .choice:disabled { cursor: default; }
+
+    /* ── Feedback ── */
+    .feedback {
+      display: none;
+      margin-top: 1.3rem;
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .feedback.correct {
+      display: block;
+      background: #F0FBF7;
+      border-left: 4px solid #22A77A;
+      color: #14694A;
+    }
+    .feedback.wrong {
+      display: block;
+      background: #FFF5F5;
+      border-left: 4px solid #E05252;
+      color: #A33030;
+    }
+
+    /* ── Action buttons ── */
+    .action-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.75rem 1.6rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-next {
+      background: linear-gradient(135deg, #2A5FA8, #4A90D9);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(42,95,168,0.3);
+    }
+    .btn-next:hover { opacity: 0.9; }
+    .btn-retry {
+      background: #E05252;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(224,82,82,0.28);
+    }
+    .btn-retry:hover { opacity: 0.9; }
+
+    /* ── Completion ── */
+    .completion {
+      display: none;
+      background: #fff;
+      border-radius: 18px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(30,60,110,0.09);
+    }
+    .completion.show { display: block; }
+    .completion .star { font-size: 3rem; margin-bottom: 1rem; }
+    .completion h2 {
+      font-size: 1.5rem;
+      color: #1A2D4A;
+      margin-bottom: 0.7rem;
+    }
+    .completion p {
+      font-size: 0.92rem;
+      color: #607080;
+      line-height: 1.7;
+      margin-bottom: 1.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="tag">회계의 ABC</div>
+  <h1>계정과목 알아보기</h1>
+</header>
+
+<div class="container">
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">1 / 3</div>
+  </div>
+
+  <div class="card" id="questionCard">
+    <button class="principle-btn" id="principleBtn" onclick="togglePrinciple()">
+      💡 기본원리 보기
+    </button>
+    <div class="principle-box" id="principleBox"></div>
+
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="action-row" id="actionRow"></div>
+  </div>
+
+  <div class="completion" id="completion">
+    <div class="star">🌟</div>
+    <h2>모든 문제 완료!</h2>
+    <p>회계 계정과목의 기본 개념을 잘 익혔어요.<br>더 많은 문제로 실력을 키워보세요!</p>
+    <button class="btn btn-next" onclick="restart()">처음부터 다시 풀기</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  문제 추가는 여기에만 하면 됩니다
+// ═══════════════════════════════════════════
+const questions = [
+  {
+    principle: "재무상태표 계정은 회사의 업종에 따라 사용하는 계정이 조금 달라진다. 제조업은 제품을 만들기 위한 재료와 생산 관련 계정이 필요하지만, 일반 서비스업이나 도소매업은 그런 계정을 사용하지 않는 경우가 많다.",
+    question: "다음 중 제조업이 아닌 회사의 재무상태표에 일반적으로 나타나기 어려운 계정은 무엇일까?",
+    choices: ["상품", "원재료", "보통예금", "매출채권"],
+    answer: 1,
+    explanations: [
+      "상품: 도소매업에서 판매를 위해 보유하는 재고자산이다.",
+      null,
+      "보통예금: 업종과 관계없이 회사의 예금 계정으로 사용된다.",
+      "매출채권: 외상으로 판매한 뒤 아직 받지 못한 돈을 나타내는 계정이다."
+    ]
+  },
+  {
+    principle: "재고자산은 회사가 판매하거나 생산에 사용하기 위해 보유하는 자산이다. 같은 재고자산이라도 어떤 상태인지에 따라 사용하는 계정명이 달라진다.",
+    question: "다음 중 \"판매를 위해 외부에서 사 온 물건이 아직 팔리지 않고 남아 있는 상태\"를 나타내는 계정과목은 무엇일까?",
+    choices: ["원재료", "제품", "상품", "소모품"],
+    answer: 2,
+    explanations: [
+      "원재료: 제품을 만들기 위해 투입되는 재료에 사용한다.",
+      "제품: 회사가 직접 만들어 완성된 상태의 재고에 사용한다.",
+      null,
+      "소모품: 사무용품처럼 반복 사용 과정에서 소모되는 항목에 사용한다."
+    ]
+  },
+  {
+    principle: "회사는 물건이나 서비스를 제공받고 나중에 대금을 치르거나, 반대로 돈을 먼저 받거나 지급하는 경우가 있다. 이처럼 현금 흐름과 거래 시점이 다를 때, 각 상황에 맞는 계정과목을 정확히 구분해야 한다.",
+    question: "회사가 비품을 구입했지만 아직 대금을 지급하지 않았다. 이 금액을 회계상 무엇이라고 할까?",
+    choices: ["미지급금", "예수금", "선수금", "선급비용"],
+    answer: 0,
+    explanations: [
+      null,
+      "예수금: 회사가 잠시 보관 중인 돈이다.",
+      "선수금: 고객에게 먼저 받은 돈이다.",
+      "선급비용: 비용을 미리 지급한 자산 계정이다."
+    ]
+  }
+];
+// ═══════════════════════════════════════════
+
+let idx = 0;
+let done = false;
+const NUMS = ["①", "②", "③", "④"];
+
+function load(i) {
+  const q = questions[i];
+  done = false;
+
+  // progress
+  const pct = (i / questions.length) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressLabel").textContent = `${i + 1} / ${questions.length}`;
+
+  // principle
+  document.getElementById("principleBox").textContent = q.principle;
+  document.getElementById("principleBox").classList.remove("open");
+  document.getElementById("principleBtn").textContent = "💡 기본원리 보기";
+
+  // question
+  document.getElementById("qText").textContent = q.question;
+
+  // choices
+  const el = document.getElementById("choices");
+  el.innerHTML = "";
+  q.choices.forEach((text, ci) => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = `<span class="badge">${NUMS[ci]}</span>${text}`;
+    btn.onclick = () => pick(ci);
+    el.appendChild(btn);
+  });
+
+  // reset
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback";
+  fb.textContent = "";
+  document.getElementById("actionRow").innerHTML = "";
+}
+
+function togglePrinciple() {
+  const box = document.getElementById("principleBox");
+  const btn = document.getElementById("principleBtn");
+  box.classList.toggle("open");
+  btn.textContent = box.classList.contains("open")
+    ? "💡 기본원리 닫기"
+    : "💡 기본원리 보기";
+}
+
+function pick(ci) {
+  if (done) return;
+  done = true;
+
+  const q = questions[idx];
+  const correct = ci === q.answer;
+  const btns = document.querySelectorAll(".choice");
+
+  btns.forEach(b => (b.disabled = true));
+  btns[q.answer].classList.add("correct");
+  if (!correct) btns[ci].classList.add("wrong");
+
+  const fb = document.getElementById("feedback");
+  if (correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✅ 정답입니다!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = `❌ 오답입니다. ${q.explanations[ci]}`;
+  }
+
+  const row = document.getElementById("actionRow");
+  row.innerHTML = "";
+  if (correct) {
+    if (idx < questions.length - 1) {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-next";
+      btn.textContent = "다음 문제 →";
+      btn.onclick = () => { idx++; load(idx); };
+      row.appendChild(btn);
+    } else {
+      setTimeout(finish, 800);
+    }
+  } else {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-retry";
+    btn.textContent = "↺ 다시 풀기";
+    btn.onclick = () => load(idx);
+    row.appendChild(btn);
+  }
+}
+
+function finish() {
+  document.getElementById("questionCard").style.display = "none";
+  document.getElementById("completion").classList.add("show");
+  document.getElementById("progressFill").style.width = "100%";
+  document.getElementById("progressLabel").textContent = `${questions.length} / ${questions.length}`;
+}
+
+function restart() {
+  idx = 0;
+  document.getElementById("questionCard").style.display = "block";
+  document.getElementById("completion").classList.remove("show");
+  load(0);
+}
+
+load(0);
+</script>
+
+</body>
+</html>
