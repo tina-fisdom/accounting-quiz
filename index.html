@@ -488,7 +488,7 @@
       <div class="result-sep">/</div>
       <div class="result-total-num" id="result-total">15</div>
     </div>
-    <div class="result-unit">처음 시도에 맞춘 문제 수</div>
+    <div class="result-unit" id="result-unit"></div>
     <div class="result-msg" id="result-msg"></div>
     <div class="result-actions">
       <button class="btn-outline" onclick="showScreen('screen-home')">홈으로</button>
@@ -554,10 +554,11 @@
   }
 
   // ── 문제 로드 ──
-  function loadQuestion(i) {
+  // isRetry=true 이면 isFirstAttempt를 유지 (재도전은 점수 불인정)
+  function loadQuestion(i, isRetry = false) {
     const q = state.questions[i];
     const total = state.questions.length;
-    state.isFirstAttempt = true;
+    if (!isRetry) state.isFirstAttempt = true;
     state.answered = false;
 
     document.getElementById("progressFill").style.width =
@@ -626,7 +627,7 @@
       const btn = document.createElement("button");
       btn.className = "btn btn-retry";
       btn.textContent = "↺  다시 풀기";
-      btn.onclick = () => loadQuestion(state.idx);
+      btn.onclick = () => loadQuestion(state.idx, true);
       row.appendChild(btn);
     }
   }
@@ -679,6 +680,8 @@
 
     document.getElementById("result-icon").textContent = icon;
     document.getElementById("result-title").textContent = title;
+    document.getElementById("result-unit").textContent =
+      `${total}문제 중 첫 번째 시도에서 ${correct}문제 정답`;
     document.getElementById("result-msg").textContent = msg;
     showScreen("screen-result");
   }
