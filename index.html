@@ -430,9 +430,32 @@
 <body>
 
 <!-- ════════════════════════════════
+     오늘의 문제 화면
+════════════════════════════════ -->
+<div id="screen-daily" class="screen active">
+  <div class="app-header">
+    <div class="tag">오늘의 문제</div>
+    <h1>회계의 ABC</h1>
+    <p id="daily-date-label"></p>
+  </div>
+  <div class="quiz-body">
+    <div class="q-card">
+      <button class="principle-btn" id="dailyPrincipleBtn" onclick="toggleDailyPrinciple()">
+        💡 기본원리
+      </button>
+      <div class="principle-box" id="dailyPrincipleBox"></div>
+      <div class="q-text" id="dailyQText"></div>
+      <div class="choices" id="dailyChoices"></div>
+      <div class="feedback" id="dailyFeedback"></div>
+      <div class="action-row" id="dailyActionRow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
      시작 화면
 ════════════════════════════════ -->
-<div id="screen-home" class="screen active">
+<div id="screen-home" class="screen">
   <div class="app-header">
     <div class="tag">문제은행</div>
     <h1>회계의 ABC</h1>
@@ -501,6 +524,90 @@
 <script>
   const NUMS = ["①", "②", "③", "④"];
 
+  // ── 오늘의 문제 ──
+  const dailyState = { answered: false, isFirstAttempt: true };
+
+  function formatDate(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+  }
+
+  function loadDailyQuestion(isRetry = false) {
+    const q = DAILY_QUESTION;
+    if (!isRetry) dailyState.isFirstAttempt = true;
+    dailyState.answered = false;
+
+    document.getElementById("daily-date-label").textContent = formatDate(q.date);
+
+    const principleBox = document.getElementById("dailyPrincipleBox");
+    principleBox.textContent = q.principle;
+    principleBox.classList.remove("open");
+    document.getElementById("dailyPrincipleBtn").textContent = "💡 기본원리";
+
+    document.getElementById("dailyQText").textContent = q.q;
+
+    const choicesEl = document.getElementById("dailyChoices");
+    choicesEl.innerHTML = "";
+    q.opts.forEach((text, ci) => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.innerHTML = `<span class="badge">${NUMS[ci]}</span>${text}`;
+      btn.onclick = () => onDailyPick(ci);
+      choicesEl.appendChild(btn);
+    });
+
+    document.getElementById("dailyFeedback").className = "feedback";
+    document.getElementById("dailyFeedback").textContent = "";
+    document.getElementById("dailyActionRow").innerHTML = "";
+  }
+
+  function onDailyPick(ci) {
+    if (dailyState.answered) return;
+    dailyState.answered = true;
+
+    const q = DAILY_QUESTION;
+    const isCorrect = ci === q.answer;
+    const btns = document.querySelectorAll("#dailyChoices .choice");
+    btns.forEach(b => (b.disabled = true));
+    btns[q.answer].classList.add("correct");
+    if (!isCorrect) btns[ci].classList.add("wrong");
+
+    const fb = document.getElementById("dailyFeedback");
+    if (isCorrect) {
+      fb.className = "feedback correct";
+      fb.textContent = "✓  " + q.correct_msg;
+    } else {
+      dailyState.isFirstAttempt = false;
+      fb.className = "feedback wrong";
+      fb.textContent = "✗  " + (q.wrong_explains[ci] || "");
+    }
+
+    const row = document.getElementById("dailyActionRow");
+    row.innerHTML = "";
+    if (isCorrect) {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-next";
+      btn.textContent = "카테고리 선택하러 가기 →";
+      btn.onclick = () => showScreen("screen-home");
+      row.appendChild(btn);
+    } else {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-retry";
+      btn.textContent = "↺  다시 풀기";
+      btn.onclick = () => loadDailyQuestion(true);
+      row.appendChild(btn);
+    }
+  }
+
+  function toggleDailyPrinciple() {
+    const box = document.getElementById("dailyPrincipleBox");
+    const btn = document.getElementById("dailyPrincipleBtn");
+    box.classList.toggle("open");
+    btn.textContent = box.classList.contains("open")
+      ? "💡 기본원리 닫기"
+      : "💡 기본원리";
+  }
+
   const state = {
     catIdx: 0,
     questions: [],
@@ -510,8 +617,10 @@
     answered: false,
   };
 
-  // ── 초기화: 카테고리 목록 렌더링 ──
+  // ── 초기화 ──
   function init() {
+    loadDailyQuestion();
+
     const list = document.getElementById("category-list");
     list.innerHTML = "";
     CATEGORIES.forEach((cat, i) => {
