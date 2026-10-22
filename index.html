@@ -437,6 +437,10 @@
     <div class="tag">오늘의 문제</div>
     <h1>회계의 ABC</h1>
     <p id="daily-date-label"></p>
+    <nav style="margin-top:1rem;line-height:2">
+      <button class="btn-nav-home" onclick="showScreen('screen-home')">문제은행 홈</button>
+      <a href="bungae/#today" style="color:inherit;margin-left:.6rem">분개의 기초 · 오늘의 문제 →</a>
+    </nav>
   </div>
   <div class="quiz-body">
     <div class="q-card">
@@ -464,6 +468,10 @@
   <div class="home-body">
     <div class="section-label">CATEGORY</div>
     <div id="category-list"></div>
+    <a class="category-card" href="bungae/" style="text-decoration:none;color:inherit">
+      <div><div class="cat-name">분개의 기초</div><div class="cat-sub">차변과 대변 · 별도 시리즈</div><div class="cat-meta">일반 문제와 종합복습 · 이어서 학습</div></div><div class="cat-arrow">→</div>
+    </a>
+    <a href="bungae/#today" style="color:var(--text)">분개의 기초 오늘의 문제</a>
   </div>
 </div>
 
@@ -569,17 +577,20 @@
     const isCorrect = ci === q.answer;
     const btns = document.querySelectorAll("#dailyChoices .choice");
     btns.forEach(b => (b.disabled = true));
-    btns[q.answer].classList.add("correct");
+    if (isCorrect) btns[q.answer].classList.add("correct");
     if (!isCorrect) btns[ci].classList.add("wrong");
 
     const fb = document.getElementById("dailyFeedback");
     if (isCorrect) {
       fb.className = "feedback correct";
-      fb.textContent = "✓  " + q.correct_msg;
+      fb.textContent = "✓  " + q.correct_msg + "\n\n선택지 해설\n" + q.wrong_explains.map((text, i) => text ? NUMS[i] + " " + text : "").filter(Boolean).join("\n");
+      fb.style.whiteSpace = "pre-line";
+      document.getElementById("dailyPrincipleBox").classList.add("open");
+      document.getElementById("dailyPrincipleBtn").textContent = "💡 기본원리 닫기";
     } else {
       dailyState.isFirstAttempt = false;
       fb.className = "feedback wrong";
-      fb.textContent = "✗  " + (q.wrong_explains[ci] || "");
+      fb.textContent = "다시 한 번 생각해 볼까요?";
     }
 
     const row = document.getElementById("dailyActionRow");
@@ -704,20 +715,23 @@
 
     const q = state.questions[state.idx];
     const isCorrect = ci === q.answer;
-    const btns = document.querySelectorAll(".choice");
+    const btns = document.querySelectorAll("#choices .choice");
     btns.forEach(b => (b.disabled = true));
-    btns[q.answer].classList.add("correct");
+    if (isCorrect) btns[q.answer].classList.add("correct");
     if (!isCorrect) btns[ci].classList.add("wrong");
 
     const fb = document.getElementById("feedback");
     if (isCorrect) {
       if (state.isFirstAttempt) state.correctOnFirst++;
       fb.className = "feedback correct";
-      fb.textContent = "✓  " + q.correct_msg;
+      fb.textContent = "✓  " + q.correct_msg + "\n\n선택지 해설\n" + q.wrong_explains.map((text, i) => text ? NUMS[i] + " " + text : "").filter(Boolean).join("\n");
+      fb.style.whiteSpace = "pre-line";
+      document.getElementById("principleBox").classList.add("open");
+      document.getElementById("principleBtn").textContent = "💡 기본원리 닫기";
     } else {
       state.isFirstAttempt = false;
       fb.className = "feedback wrong";
-      fb.textContent = "✗  " + (q.wrong_explains[ci] || "");
+      fb.textContent = "다시 한 번 생각해 볼까요?";
     }
 
     const row = document.getElementById("actionRow");
