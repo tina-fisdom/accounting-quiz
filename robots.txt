@@ -1,0 +1,5 @@
+# 검색엔진과 AI 검색이 모두 읽을 수 있도록 전체 허용
+User-agent: *
+Allow: /
+
+Sitemap: https://study.fisdom.co.kr/sitemap.xml
