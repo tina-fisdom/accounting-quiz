@@ -1010,7 +1010,6 @@ var LEGACY={
     var tree = tocTree();
     var h = '<ul class="toc">';
     tree.forEach(function(node){
-      if(QUESTIONS[node.q].id === "bungae-q-003") h += '<li><h2 style="font-size:1.1rem;margin:.5rem 0">돈이 들어오는 분개</h2></li>';
       var isNew = (TODAY.pool === "q" && node.q === TODAY.index);
       var hasKids = node.children.length > 0;
       var open = hasKids && (TODAY.pool === "q" && node.children.indexOf(TODAY.index) !== -1);
