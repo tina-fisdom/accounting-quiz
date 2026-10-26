@@ -755,8 +755,10 @@ var TOC=[
     ]
   },
   {
-    "q": 19,
-    "children": []
+    "label": "결산 분개",
+    "children": [
+      19
+    ]
   }
 ]
 ;
@@ -990,7 +992,15 @@ var LEGACY={
   /* TOC에 적힌 순서대로 묶고, 빠진 문제는 맨 아래에 그대로 붙인다. */
   function tocTree(){
     var used = {}, tree = [];
-    TOC.forEach(function(node){
+    TOC.forEach(function(node, n){
+      if(node.label){
+        var gkids = (node.children || []).filter(function(c){
+          if(QUESTIONS[c] === undefined || used[c]) return false;
+          used[c] = true; return true;
+        });
+        tree.push({ label: node.label, g: "g" + n, children: gkids });
+        return;
+      }
       if(QUESTIONS[node.q] === undefined) return;
       used[node.q] = true;
       var kids = (node.children || []).filter(function(c){
@@ -1010,6 +1020,23 @@ var LEGACY={
     var tree = tocTree();
     var h = '<ul class="toc">';
     tree.forEach(function(node){
+      if(node.label){
+        if(!node.children.length) return;
+        var gOpen = (TODAY.pool === "q" && node.children.indexOf(TODAY.index) !== -1);
+        var gDone = node.children.filter(function(c){ return isDone(c, "q"); }).length;
+        h += '<li><div class="row"><button type="button" data-gl="' + node.g + '">' +
+             '<span class="head"><span>' + esc(node.label) + '</span>' +
+             (gOpen ? '<span class="new">오늘의 새 문제</span>' : '') +
+             '</span><p class="peek">' + node.children.length + '문제 · 눌러서 펼치기</p></button>' +
+             '<button class="caret" type="button" data-g="' + node.g + '" aria-expanded="' + gOpen + '">' +
+             gDone + '/' + node.children.length + ' <span class="arrow">▾</span></button>' +
+             '</div><ul class="sub" id="sub-' + node.g + '"' + (gOpen ? '' : ' hidden') + '>';
+        node.children.forEach(function(c){
+          h += tocItem(QUESTIONS[c], c, "q", (TODAY.pool === "q" && c === TODAY.index));
+        });
+        h += '</ul></li>';
+        return;
+      }
       var isNew = (TODAY.pool === "q" && node.q === TODAY.index);
       var hasKids = node.children.length > 0;
       var open = hasKids && (TODAY.pool === "q" && node.children.indexOf(TODAY.index) !== -1);
@@ -1056,6 +1083,12 @@ var LEGACY={
         var open = b.getAttribute("aria-expanded") === "true";
         b.setAttribute("aria-expanded", open ? "false" : "true");
         sub.hidden = open;
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".toc button[data-gl]"), function(b){
+      b.addEventListener("click", function(){
+        var c = document.querySelector('.caret[data-g="' + b.dataset.gl + '"]');
+        if(c){ c.click(); }
       });
     });
     var toReview = document.getElementById("toReview");

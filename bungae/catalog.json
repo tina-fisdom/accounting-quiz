@@ -609,8 +609,11 @@
       ]
     },
     {
-      "id": "bungae-q-020",
-      "children": []
+      "group": "bungae-g-001",
+      "label": "결산 분개",
+      "children": [
+        "bungae-q-020"
+      ]
     }
   ]
 }
