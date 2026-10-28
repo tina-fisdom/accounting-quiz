@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회계의 활용</title>
+
+
+
+<style>
+:root{
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --blush:#f1e1df;
+  --blush-soft:#f9efee;
+  --blush-line:#e0c3be;
+  --cream:#fdf9f8;
+  --paper:#ffffff;
+  --ink:#2f2422;
+  --ink-soft:#7c6a66;
+  --green:#2f6b51;
+  --green-bg:#eaf3ee;
+  --green-line:#bcd9cb;
+  --rose:#a8453a;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  font-size:17px;line-height:1.75;letter-spacing:-.01em;
+}
+.wrap{max-width:42rem;margin:0 auto;padding:0 1.25rem 3.5rem}
+
+/* 머리글 */
+.masthead{background:var(--blush);border-bottom:1px solid var(--blush-line)}
+.masthead .wrap{padding-top:2.2rem;padding-bottom:1.3rem}
+h1{
+  font-family:"Nanum Myeongjo","Gowun Batang",Georgia,serif;
+  font-weight:700;font-size:clamp(1.8rem,5.5vw,2.4rem);
+  line-height:1.3;margin:0 0 1rem;
+}
+.meter{display:flex;align-items:center;gap:.8rem;font-size:.85rem;color:var(--ink-soft)}
+.bar{flex:1;height:5px;background:rgba(47,36,34,.12);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .5s ease}
+
+/* 공통 */
+.badge{
+  display:inline-block;background:var(--ink);color:var(--blush-soft);
+  font-size:.78rem;font-weight:700;padding:.15rem .7rem;border-radius:999px;margin-bottom:.9rem;
+}
+h2{
+  font-family:"Nanum Myeongjo","Gowun Batang",Georgia,serif;
+  font-weight:700;font-size:1.55rem;line-height:1.4;margin:0 0 1.3rem;
+}
+.card{
+  background:var(--paper);border:1px solid var(--blush-line);
+  border-radius:3px;padding:2rem 1.6rem;margin-top:2.2rem;
+}
+.story{margin:0 0 1.2rem;color:var(--ink)}
+.statements{background:var(--blush-soft);border-left:3px solid var(--blush-line);padding:1rem 1.2rem;margin:0 0 1.3rem}
+.statements p{margin:.15rem 0}
+.tablewrap{overflow-x:auto;margin:0 0 1.3rem}
+table{border-collapse:collapse;width:100%;font-size:.95rem;min-width:22rem}
+th,td{border-bottom:1px solid var(--blush-line);padding:.5rem .7rem;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--blush-soft)}
+tfoot td{font-weight:700}
+.q{font-size:1.08rem;font-weight:500;margin:0 0 1.3rem}
+
+/* 원리 토글 */
+.toggle{
+  font:inherit;font-size:.9rem;color:var(--ink);
+  background:var(--blush-soft);border:1px solid var(--blush-line);border-radius:999px;
+  padding:.4rem 1rem;cursor:pointer;margin:0 0 1.3rem;
+}
+.toggle:hover{background:var(--blush)}
+.toggle:focus-visible,.opt:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.principle{
+  background:var(--blush-soft);border-left:3px solid var(--blush-line);
+  padding:1rem 1.2rem;margin:0 0 1.4rem;
+}
+.principle h3{font-family:"Nanum Myeongjo",Georgia,serif;font-size:1rem;margin:0 0 .35rem}
+.principle p{margin:0}
+.principle a{color:var(--rose)}
+[hidden]{display:none !important}
+
+/* 선택지 */
+.opts{display:flex;flex-direction:column;gap:.55rem}
+.opt{
+  display:flex;align-items:flex-start;gap:.7rem;width:100%;
+  font:inherit;color:inherit;text-align:left;background:var(--paper);
+  border:1px solid var(--blush-line);border-radius:3px;padding:.8rem 1rem;cursor:pointer;
+  transition:background .15s ease;
+}
+.opt:hover:not(:disabled){background:var(--blush-soft)}
+.opt:disabled{cursor:default}
+.opt .num{font-weight:700;flex:none}
+.opt.right{border-color:var(--green);background:var(--green-bg)}
+.opt.miss{border-color:var(--rose);background:#faeceb;color:var(--ink-soft)}
+.opt.shake{animation:shake .4s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .opt.shake{animation:none}
+  .bar i{transition:none}
+}
+
+/* 결과 */
+.result{margin-top:1.6rem}
+.praise{
+  display:flex;align-items:baseline;gap:.5rem;
+  background:var(--green-bg);border:1px solid var(--green-line);border-radius:3px;
+  padding:.8rem 1.1rem;margin:0 0 1.3rem;color:var(--green);font-weight:700;
+  animation:pop .35s ease;
+}
+.praise .tag{font-family:"Nanum Myeongjo",Georgia,serif;font-size:1.1rem;flex:none}
+.praise .msg{font-weight:500;color:var(--ink)}
+@keyframes pop{
+  0%{opacity:0;transform:translateY(6px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){ .praise{animation:none} }
+.retry-msg{color:var(--rose);font-weight:500;margin:0 0 .9rem}
+.answernote{background:var(--green-bg);border-left:3px solid var(--green-line);padding:1rem 1.2rem;margin:0 0 1.3rem}
+.answernote h3{font-family:"Nanum Myeongjo",Georgia,serif;font-size:1rem;margin:0 0 .35rem;color:var(--green)}
+.answernote p{margin:0;white-space:pre-line}
+.review h3{font-family:"Nanum Myeongjo",Georgia,serif;font-size:1rem;margin:0 0 .5rem}
+.review .line{display:flex;gap:.6rem;margin:.4rem 0;color:var(--ink-soft)}
+.review .line .num{flex:none;color:var(--ink);font-weight:700}
+.btn{
+  font:inherit;background:var(--ink);color:var(--blush-soft);
+  border:none;border-radius:3px;padding:.65rem 1.3rem;cursor:pointer;margin-top:1.4rem;
+}
+.btn:hover{background:#463734}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--blush-line)}
+.btn.ghost:hover{background:var(--blush-soft)}
+
+/* 목차 */
+.toc{list-style:none;margin:2rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+.toc button{
+  width:100%;font:inherit;color:inherit;text-align:left;background:var(--paper);
+  border:1px solid var(--blush-line);border-radius:3px;padding:1rem 1.2rem;cursor:pointer;
+}
+.toc button:hover{background:var(--blush-soft)}
+.toc .head{display:flex;align-items:center;gap:.6rem;font-weight:500}
+.toc .done{color:var(--green);font-weight:700;flex:none}
+.toc .new{
+  background:var(--blush);color:var(--ink);font-size:.72rem;font-weight:700;
+  padding:.1rem .55rem;border-radius:999px;flex:none;
+}
+.toc .row{display:flex;gap:.5rem;align-items:stretch}
+.toc .row > button:first-child{flex:1}
+.caret{
+  font:inherit;color:var(--ink-soft);background:var(--blush-soft);
+  border:1px solid var(--blush-line);border-radius:3px;
+  padding:0 .9rem;cursor:pointer;flex:none;white-space:nowrap;font-size:.85rem;
+}
+.caret:hover{background:var(--blush);color:var(--ink)}
+.caret .arrow{display:inline-block;transition:transform .2s ease}
+.caret[aria-expanded="true"] .arrow{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){ .caret .arrow{transition:none} }
+.sub{
+  list-style:none;margin:.6rem 0 0 1rem;padding:0 0 0 1rem;
+  border-left:2px solid var(--blush-line);
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.sub button{padding:.8rem 1rem;background:var(--blush-soft)}
+.sub button:hover{background:var(--blush)}
+.toc .peek{
+  margin:.25rem 0 0;font-size:.9rem;color:var(--ink-soft);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.banner{background:var(--green-bg);border:1px solid var(--green-line);border-radius:3px;padding:1rem 1.2rem;margin-top:2rem;color:var(--green)}
+.banner p{margin:0}
+
+/* 첫 화면 안내 */
+.guide{
+  background:var(--blush-soft);border:1px solid var(--blush-line);border-radius:3px;
+  padding:1.2rem 1.4rem;margin-top:1.6rem;
+}
+.guide p{margin:0 0 .3rem;font-weight:500}
+.guide .sub{margin:0;font-size:.92rem;color:var(--ink-soft);font-weight:400}
+.guide .btn{margin-top:1rem}
+
+/* 브랜드 */
+.brand{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--blush-line);font-size:.88rem;color:var(--ink-soft)}
+.brand a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--blush-line)}
+.brand a:hover{border-bottom-color:var(--ink)}
+.notice{font-size:.82rem;color:var(--ink-soft)}.toc .row>button:first-child{min-width:0}.toc .caret{width:auto}.toc .head{flex-wrap:wrap}nav a{color:var(--ink)}.journal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem;width:100%;margin:.25rem 0;white-space:normal}.journal>span{min-width:0;overflow-wrap:anywhere;padding:.3rem;border:1px solid var(--blush-line)}.opt>span:last-child,.review .line>span:last-child{flex:1;min-width:0}.q{white-space:pre-line}@media(max-width:400px){.wrap{padding-left:.7rem;padding-right:.7rem}.card{padding:1.2rem .8rem}.opt{padding:.7rem .5rem;gap:.4rem}.journal{font-size:.9rem}.toc .row{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1>회계의 활용</h1>
+    <div class="meter">
+      <span id="total">총 0문항</span>
+      <div class="bar"><i id="barfill"></i></div>
+      <span id="donecount">0 완료</span>
+    </div>
+  </div>
+</header>
+
+<nav class="wrap"><a href="https://fisdom.co.kr">FISDOM 홈</a> · <a href="../">기존 회계놀이터</a> · <a href="../articles/">회계 글</a> · <a href="#toc">회계의 활용 목차</a> · <a href="../bungae/">분개의 기초</a> · <a href="#today">오늘의 문제</a><p class="notice">기록은 이 브라우저에만 저장됩니다. Claude·GitHub 등 다른 출처의 기록은 자동 이전되지 않습니다.</p><p id="storage-warning" role="status"></p></nav><main class="wrap" id="app"></main>
+
+<script>var QUESTIONS=[
+  {
+    "title": "감사보고서 한 줄로 위험한 회사를 알아볼 수 있을까?",
+    "story": "(주)라이프코칭은 큰 계약을 앞두고 거래처 후보 네 곳의 감사보고서를 확인했다. 감사보고서는 회사 밖의 회계사(감사인)가 그 회사의 재무제표를 믿을 수 있는지 의견을 적어 둔 보고서다.",
+    "q": "이에 대한 설명으로 옳지 않은 것은?",
+    "statements": [
+      "가. A사 – 적정의견: 재무제표가 중요한 점에서 회계기준에 맞게 작성되었다.",
+      "나. B사 – 한정의견: 일부 항목에 문제가 있지만, 그 영향이 재무제표 전체로 퍼질 정도는 아니다.",
+      "다. C사 – 부적정의견: 잘못된 부분이 중요하고, 재무제표 전반에 퍼져 있다.",
+      "라. D사 – 의견거절: 감사인이 충분한 증거를 얻지 못해 의견 자체를 낼 수 없었다."
+    ],
+    "options": [
+      "가)의 적정의견은 재무제표를 믿을 만하다는 뜻이지, 회사가 돈을 잘 번다거나 망하지 않는다는 보증은 아니다.",
+      "나)의 한정의견은 문제가 된 부분을 빼면 나머지 재무제표는 믿을 만하다는 뜻이다.",
+      "라)의 의견거절은 감사인이 판단을 미룬 것일 뿐이라, 다)의 부적정의견보다 덜 위험한 신호다.",
+      "다)의 부적정의견과 라)의 의견거절은 재무제표를 믿기 어렵다는 가장 심각한 경고 신호다."
+    ],
+    "answer": 2,
+    "principle": "감사의견은 회사의 실력이 아니라 재무제표라는 '성적표'를 믿을 수 있는지에 대한 의견이다. 적정이 아닌 의견은 두 가지를 보고 정한다. 무엇이 문제인가(숫자가 틀렸다 / 확인할 증거가 없다), 그리고 그 문제가 재무제표 일부에 그치는가, 전체에 퍼져 있는가.",
+    "reviewLabel": "선택지 해설",
+    "wrong": {
+      "0": "옳다. 감사인은 숫자가 맞게 적혔는지를 보는 사람이다. 적자 회사도, 곧 어려워질 회사도 적정의견을 받을 수 있다.",
+      "1": "옳다. 한정의견은 \"이 부분만 빼면 괜찮다\"는 뜻이라, 문제 된 항목이 무엇인지 감사보고서에서 꼭 확인하면 된다.",
+      "2": "가)는 성적표를 믿을 만하다는 뜻일 뿐, 성적이 좋다는 뜻은 아니다. 나)는 문제 된 부분만 빼고 보면 된다는 뜻이다. 다)는 성적표가 전반적으로 틀렸다는 뜻이다. 라)는 감사인이 확인할 증거조차 얻지 못했다는 뜻이라, 부적정의견만큼 심각한 신호다. 그래서 3)이 옳지 않다.",
+      "3": "옳다. 다)는 숫자가 전반적으로 틀렸고, 라)는 확인할 증거조차 없었다는 뜻이라 둘 다 재무제표를 믿기 어렵다."
+    },
+    "id": "hwalyong-q-001"
+  }
+]
+;
+var REVIEWS=[]
+;
+var TOC=[
+  {
+    "q": 0,
+    "children": []
+  }
+]
+;
+var MOVED={};
+var TODAY={pool:'q',index:QUESTIONS.findIndex(q=>q.id==='hwalyong-q-001')};
+var LEGACY={"q":[],"r":[]}
+;
+(function(){
+  var NUM = ["①","②","③","④","⑤","⑥"];
+  var PRAISE = [
+    "정답입니다. 숫자 뒤의 이야기가 보이기 시작했네요.",
+    "맞았습니다. 이 감각이 쌓이면 재무제표가 읽힙니다.",
+    "정답입니다. 오늘 한 문제만큼 더 단단해졌어요.",
+    "잘하셨어요. 원리를 제대로 짚으셨습니다.",
+    "정답입니다. 헷갈리기 쉬운 지점인데 정확하네요.",
+    "맞았습니다. 이제 실제 보고서를 봐도 덜 낯설 거예요.",
+    "훌륭합니다. 회계를 실제로 써먹는 눈이 생겼어요."
+  ];
+  var KEY = "hwalyong-done";
+  var KEY_R = "hwalyong-done-review";
+  var app = document.getElementById("app");
+  var stored;
+  try {stored=JSON.parse(localStorage.getItem('accounting.hwalyong.progress.v1')||'null');} catch(e) {}
+  function migrated(key,pool){return load(key).filter(function(i){return Number.isInteger(i)&&LEGACY[pool][i];}).map(function(i){return LEGACY[pool][i];});}
+  function valid(ids,pool){return Array.from(new Set((Array.isArray(ids)?ids:[]).filter(function(id){return poolList(pool).some(function(q){return q.id===id;});})));}
+  var done=valid((stored&&Array.isArray(stored.q)?stored.q:[]).concat(migrated(KEY,'q')),'q');
+  var doneR=valid((stored&&Array.isArray(stored.r)?stored.r:[]).concat(migrated(KEY_R,'r')),'r');
+  save();
+
+
+  function load(key){
+    try{
+      var raw = localStorage.getItem(key);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  }
+  function save(){
+    try{
+      localStorage.setItem('accounting.hwalyong.progress.v1', JSON.stringify({q:done,r:doneR}));
+    }catch(e){ document.getElementById("storage-warning").textContent="이 브라우저에서는 학습 기록을 저장할 수 없습니다."; }
+  }
+  function poolList(pool){ return pool === "r" ? REVIEWS : QUESTIONS; }
+  function poolDone(pool){ return pool === "r" ? doneR : done; }
+  function isDone(i, pool){ return poolDone(pool).indexOf(poolList(pool)[i].id) !== -1; }
+  function markDone(i, pool){
+    if(!isDone(i, pool)){ poolDone(pool).push(poolList(pool)[i].id); save(); }
+    meter();
+  }
+  function meter(){
+    document.getElementById("total").textContent = "총 " + QUESTIONS.length + "문항";
+    document.getElementById("donecount").textContent = done.length + " 완료";
+    document.getElementById("barfill").style.width =
+      (QUESTIONS.length ? Math.round(done.length / QUESTIONS.length * 100) : 0) + "%";
+  }
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function journal(text){
+    return String(text).split(/(<br\s*\/?\s*>|\n)/i).map(function(line){
+      return line.replace(/(\(차변\)|차변:)\s*([^/│<>]+?)\s*[/│]\s*(\(대변\)|대변:)\s*([^<>]+)/g,function(all,d,left,c,right){return '<span class="journal"><span>'+d+' '+left+'</span><span>'+c+' '+right+'</span></span>';});
+    }).join('');
+  }
+
+  function brandHTML(){
+    return '<div class="brand">코칭하는 회계사 김예희 · ' +
+           '<a href="https://www.fisdom.co.kr/" target="_blank" rel="noopener">FISDOM</a></div>';
+  }
+
+  function renderQuestion(idx, mode, pool){
+    pool = pool || "q";
+    var item = poolList(pool)[idx];
+    setRoute("q/"+item.id);
+    var h = '<article class="card">';
+    if(mode === "today"){ h += '<span class="badge">오늘의 새 문제</span>'; }
+    h += '<h2>' + esc(item.title) + '</h2>';
+
+    if(item.story){ h += '<p class="story">' + esc(item.story) + '</p>'; }
+
+    if(item.statements && item.statements.length){
+      h += '<div class="statements">';
+      item.statements.forEach(function(s){ h += '<p>' + esc(s) + '</p>'; });
+      h += '</div>';
+    }
+
+    if(item.table){
+      h += '<div class="tablewrap"><table>';
+      if(item.table.head){
+        h += '<thead><tr>';
+        item.table.head.forEach(function(c){ h += '<th>' + esc(c) + '</th>'; });
+        h += '</tr></thead>';
+      }
+      h += '<tbody>';
+      (item.table.rows || []).forEach(function(r){
+        h += '<tr>';
+        r.forEach(function(c){ h += '<td>' + esc(c) + '</td>'; });
+        h += '</tr>';
+      });
+      h += '</tbody>';
+      if(item.table.foot){
+        h += '<tfoot><tr>';
+        item.table.foot.forEach(function(c){ h += '<td>' + esc(c) + '</td>'; });
+        h += '</tr></tfoot>';
+      }
+      h += '</table></div>';
+    }
+
+    h += '<p class="q">' + esc(item.q) + '</p>';
+    h += '<button class="toggle" type="button" id="toggle">회계 원리 살펴보기</button>';
+    h += '<div class="principle" id="principle" hidden><h3>기본 원리</h3><p>' + journal(item.principle) + '</p></div>';
+
+    h += '<div class="opts" id="opts">';
+    item.options.forEach(function(o, i){
+      h += '<button class="opt" type="button" data-i="' + i + '">' +
+           '<span class="num">' + NUM[i] + '</span><span>' + journal(esc(o)) + '</span></button>';
+    });
+    h += '</div><div class="result" id="result"></div></article>';
+
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+
+    var principle = document.getElementById("principle");
+    var toggle = document.getElementById("toggle");
+    toggle.addEventListener("click", function(){
+      var open = !principle.hidden;
+      principle.hidden = open;
+      toggle.textContent = open ? "회계 원리 살펴보기" : "원리 접기";
+    });
+
+    var opts = Array.prototype.slice.call(document.querySelectorAll(".opt"));
+    var result = document.getElementById("result");
+
+    function reset(){
+      opts.forEach(function(b){
+        b.disabled = false;
+        b.classList.remove("right","miss","shake");
+      });
+      result.innerHTML = "";
+    }
+
+    function wrongPick(btn){
+      btn.classList.add("miss","shake");
+      btn.disabled = true;
+      setTimeout(function(){ btn.classList.remove("shake"); }, 450);
+      result.innerHTML = '<p class="retry-msg">다시 한 번 생각해 볼까요?</p>' +
+                         '<button class="btn ghost" type="button" id="retry">다시 풀기</button>';
+      document.getElementById("retry").addEventListener("click", reset);
+    }
+
+    function correctPick(btn){
+      opts.forEach(function(b){ b.disabled = true; });
+      btn.classList.add("right");
+      principle.hidden = false;
+      toggle.textContent = "원리 접기";
+      markDone(idx, pool);
+
+      var h2 = '<div class="praise"><span class="tag">정답</span><span class="msg">' +
+               esc(PRAISE[Math.floor(Math.random() * PRAISE.length)]) + '</span></div>';
+      if(item.answerNote){
+        h2 += '<div class="answernote"><h3>정답 해설</h3><p>' + journal(item.answerNote) + '</p></div>';
+      }
+      if(item.wrong && Object.keys(item.wrong).length){
+        h2 += '<div class="review"><h3>' + esc(item.reviewLabel || "오답 해설") + '</h3>';
+        Object.keys(item.wrong).forEach(function(k){
+          var i = Number(k);
+          h2 += '<p class="line"><span class="num">' + NUM[i] + '</span><span>' +
+                journal(esc(item.wrong[k])) + '</span></p>';
+        });
+        h2 += '</div>';
+      }
+      var backToReview = (mode !== "today" && pool === "r");
+      h2 += '<button class="btn" type="button" id="go">' +
+            (mode === "today" ? "문제 목록 보기"
+              : backToReview ? "종합복습문제 목록으로 돌아가기" : "목록으로 돌아가기") + '</button>';
+      result.innerHTML = h2;
+      document.getElementById("go").addEventListener("click", function(){
+        if(backToReview){ renderReviewIndex(); } else { renderIndex(); }
+      });
+    }
+
+    opts.forEach(function(b){
+      b.addEventListener("click", function(){
+        var i = Number(b.dataset.i);
+        if(i === item.answer){ correctPick(b); } else { wrongPick(b); }
+      });
+    });
+
+    if(mode === "today"){
+      app.insertAdjacentHTML("beforeend",
+        '<div class="guide">' +
+        '<p>복식부기가 처음이신가요?</p>' +
+        '<p class="sub">오늘 문제가 어렵게 느껴진다면 시리즈의 첫 문제부터 차근차근 풀어보세요. 기초부터 쌓으면 훨씬 수월합니다.</p>' +
+        '<button class="btn ghost" type="button" id="toIndex">기초 문제부터 보기</button>' +
+        '</div>' + brandHTML());
+      document.getElementById("toIndex").addEventListener("click", renderIndex);
+    }
+  }
+
+  function tocItem(item, i, pool, isNew){
+    var peek = item.q || item.story || "";
+    return '<li><button type="button" data-i="' + i + '">' +
+           '<span class="head">' +
+           (isDone(i, pool) ? '<span class="done">✓</span>' : '') +
+           '<span>' + esc(item.title) + '</span>' +
+           (isNew ? '<span class="new">오늘의 새 문제</span>' : '') +
+           '</span><p class="peek">' + esc(peek) + '</p></button></li>';
+  }
+
+  /* TOC에 적힌 순서대로 묶고, 빠진 문제는 맨 아래에 그대로 붙인다. */
+  function tocTree(){
+    var used = {}, tree = [];
+    TOC.forEach(function(node, n){
+      if(node.label){
+        var gkids = (node.children || []).filter(function(c){
+          if(QUESTIONS[c] === undefined || used[c]) return false;
+          used[c] = true; return true;
+        });
+        tree.push({ label: node.label, g: "g" + n, children: gkids });
+        return;
+      }
+      if(QUESTIONS[node.q] === undefined) return;
+      used[node.q] = true;
+      var kids = (node.children || []).filter(function(c){
+        if(QUESTIONS[c] === undefined || used[c]) return false;
+        used[c] = true; return true;
+      });
+      tree.push({ q: node.q, children: kids });
+    });
+    QUESTIONS.forEach(function(item, i){
+      if(!used[i]){ tree.push({ q: i, children: [] }); }
+    });
+    return tree;
+  }
+
+  function renderIndex(){
+    setRoute("toc");
+    var tree = tocTree();
+    var h = '<ul class="toc">';
+    tree.forEach(function(node){
+      if(node.label){
+        if(!node.children.length) return;
+        var gOpen = (TODAY.pool === "q" && node.children.indexOf(TODAY.index) !== -1);
+        var gDone = node.children.filter(function(c){ return isDone(c, "q"); }).length;
+        h += '<li><div class="row"><button type="button" data-gl="' + node.g + '">' +
+             '<span class="head"><span>' + esc(node.label) + '</span>' +
+             (gOpen ? '<span class="new">오늘의 새 문제</span>' : '') +
+             '</span><p class="peek">' + node.children.length + '문제 · 눌러서 펼치기</p></button>' +
+             '<button class="caret" type="button" data-g="' + node.g + '" aria-expanded="' + gOpen + '">' +
+             gDone + '/' + node.children.length + ' <span class="arrow">▾</span></button>' +
+             '</div><ul class="sub" id="sub-' + node.g + '"' + (gOpen ? '' : ' hidden') + '>';
+        node.children.forEach(function(c){
+          h += tocItem(QUESTIONS[c], c, "q", (TODAY.pool === "q" && c === TODAY.index));
+        });
+        h += '</ul></li>';
+        return;
+      }
+      var isNew = (TODAY.pool === "q" && node.q === TODAY.index);
+      var hasKids = node.children.length > 0;
+      var open = hasKids && (TODAY.pool === "q" && node.children.indexOf(TODAY.index) !== -1);
+      var row = tocItem(QUESTIONS[node.q], node.q, "q", isNew);
+
+      if(!hasKids){ h += row; return; }
+
+      var doneKids = node.children.filter(function(c){ return isDone(c, "q"); }).length;
+      h += '<li><div class="row">' +
+           row.replace(/^<li>/, "").replace(/<\/li>$/, "") +
+           '<button class="caret" type="button" data-g="' + node.q + '" aria-expanded="' + open + '">' +
+           doneKids + '/' + node.children.length + ' <span class="arrow">▾</span></button>' +
+           '</div><ul class="sub" id="sub-' + node.q + '"' + (open ? '' : ' hidden') + '>';
+      node.children.forEach(function(c){
+        var kidNew = (TODAY.pool === "q" && c === TODAY.index);
+        h += tocItem(QUESTIONS[c], c, "q", kidNew);
+      });
+      h += '</ul></li>';
+    });
+    h += '</ul>';
+    if(QUESTIONS.length && done.length >= QUESTIONS.length){
+      h += '<div class="banner"><p>모든 문제를 풀었습니다. 다음 문제가 올라오면 맨 아래에 새로 추가됩니다.</p></div>';
+    }
+    if(REVIEWS.length){
+      h += '<div class="guide">' +
+           '<p>종합복습문제' + (TODAY.pool === "r" ? ' <span class="new">오늘의 새 문제</span>' : '') + '</p>' +
+           '<p class="sub">여러 문제를 한 번에 묶어 확인하는 문제입니다. 지금까지 푼 내용을 정리할 때 들어와 보세요. 현재 ' +
+           REVIEWS.length + '문항, ' + doneR.length + '문항 완료.</p>' +
+           '<button class="btn ghost" type="button" id="toReview">종합복습문제 풀어보기</button>' +
+           '</div>';
+    }
+    h += brandHTML();
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+
+    Array.prototype.forEach.call(document.querySelectorAll(".toc button[data-i]"), function(b){
+      b.addEventListener("click", function(){
+        renderQuestion(Number(b.dataset.i), "list", "q");
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".caret"), function(b){
+      b.addEventListener("click", function(){
+        var sub = document.getElementById("sub-" + b.dataset.g);
+        var open = b.getAttribute("aria-expanded") === "true";
+        b.setAttribute("aria-expanded", open ? "false" : "true");
+        sub.hidden = open;
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".toc button[data-gl]"), function(b){
+      b.addEventListener("click", function(){
+        var c = document.querySelector('.caret[data-g="' + b.dataset.gl + '"]');
+        if(c){ c.click(); }
+      });
+    });
+    var toReview = document.getElementById("toReview");
+    if(toReview){ toReview.addEventListener("click", renderReviewIndex); }
+  }
+
+  function renderReviewIndex(){
+    setRoute("reviews");
+    var h = '<article class="card"><h2>종합복습문제</h2>' +
+            '<p class="story">지금까지 다룬 내용을 묶어 확인하는 문제입니다. 한 문제 안에 여러 거래가 들어 있으니 천천히 읽어보세요.</p></article>';
+    h += '<ul class="toc">';
+    REVIEWS.forEach(function(item, i){
+      var isNew = (TODAY.pool === "r" && i === TODAY.index);
+      h += tocItem(item, i, "r", isNew);
+    });
+    h += '</ul>';
+    h += '<div class="guide"><button class="btn ghost" type="button" id="backMain">문제 목록으로 돌아가기</button></div>';
+    h += brandHTML();
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+
+    Array.prototype.forEach.call(document.querySelectorAll(".toc button[data-i]"), function(b){
+      b.addEventListener("click", function(){
+        renderQuestion(Number(b.dataset.i), "list", "r");
+      });
+    });
+    document.getElementById("backMain").addEventListener("click", renderIndex);
+  }
+
+  var routing=false;
+  function setRoute(route){if(!routing&&location.hash!=='#'+route)history.pushState(null,'','#'+route);}
+  function route(){
+    routing=true;
+    var value=location.hash.slice(1);
+    if(value==='toc')renderIndex();
+    else if(value==='reviews')renderReviewIndex();
+    else if(value===''||value==='today')renderQuestion(TODAY.index,'today',TODAY.pool);
+    else if(value.indexOf('q/')===0){
+      var id=value.slice(2), qi=QUESTIONS.findIndex(function(q){return q.id===id;}),ri=REVIEWS.findIndex(function(q){return q.id===id;});
+      if(qi>=0)renderQuestion(qi,'list','q');else if(ri>=0)renderQuestion(ri,'list','r');else if(typeof MOVED!=='undefined'&&MOVED[id]){location.replace(MOVED[id]);}else app.innerHTML='<article class="card"><h2>문제를 찾을 수 없습니다.</h2><a href="#toc">목차로 이동</a></article>';
+    }else app.innerHTML='<article class="card">올바르지 않은 링크입니다. <a href="#toc">목차로 이동</a></article>';
+    routing=false;
+  }
+  window.addEventListener('popstate',route);window.addEventListener('hashchange',route);
+  meter();route();
+
+})();
+</script>
+</body>
+</html>
