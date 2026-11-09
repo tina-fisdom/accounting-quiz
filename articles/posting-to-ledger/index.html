@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>분개 한 줄은 원장 어디에 적을까? 전기(轉記) 쉽게 이해하기 | FISDOM 회계 공부</title>
+<meta name="description" content="분개를 계정별원장에 옮겨 적는 것을 전기라고 합니다. 분개 한 줄은 계정 두 곳의 원장에 나뉘어 들어가고, 차변은 차변 칸에 대변은 대변 칸에 적습니다. 공인회계사가 월세 예시로 설명합니다.">
+<link rel="canonical" href="https://study.fisdom.co.kr/articles/posting-to-ledger/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="분개 한 줄은 원장 어디에 적을까?">
+<meta property="og:description" content="계정이 둘이면 원장도 두 곳. 왼쪽은 왼쪽 칸으로.">
+<meta property="og:url" content="https://study.fisdom.co.kr/articles/posting-to-ledger/">
+<meta property="og:locale" content="ko_KR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "분개 한 줄은 원장 어디에 적을까? 전기(轉記) 쉽게 이해하기",
+      "datePublished": "2026-11-10",
+      "dateModified": "2026-11-10",
+      "inLanguage": "ko",
+      "mainEntityOfPage": "https://study.fisdom.co.kr/articles/posting-to-ledger/",
+      "author": {
+        "@type": "Person",
+        "name": "김예희",
+        "alternateName": "티나",
+        "jobTitle": "공인회계사·재무코치",
+        "url": "https://fisdom.co.kr"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "FISDOM",
+        "url": "https://fisdom.co.kr"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "전기란 무엇인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "분개한 내용을 계정마다 따로 만든 계정별원장에 옮겨 적는 일입니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "분개 한 줄은 원장 몇 곳에 적나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "분개에 나온 계정마다 한 번씩 적습니다. 계정이 둘이면 원장 두 곳에 적습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "원장의 어느 칸에 적나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "분개에서 차변에 있던 금액은 그 계정 원장의 차변 칸에, 대변에 있던 금액은 대변 칸에 적습니다."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root{
+  --blush:#f1e1df; --blush-line:#e0c3be; --cream:#fdf9f8; --paper:#fff;
+  --ink:#2f2422; --ink-soft:#7c6a66; --green:#2f6b51; --green-bg:#eaf3ee; --green-line:#bcd9cb;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  font-size:17px;line-height:1.8;letter-spacing:-.01em}
+a{color:var(--green)}
+.top{background:var(--blush);border-bottom:1px solid var(--blush-line)}
+.top .in{max-width:42rem;margin:0 auto;padding:.7rem 1.25rem;display:flex;gap:1rem;flex-wrap:wrap;font-size:.92rem}
+.top a{color:var(--ink);text-decoration:none}
+.top .brand{font-weight:700;margin-right:auto}
+main{max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem}
+.kicker{color:var(--ink-soft);font-size:.9rem;margin:0}
+h1{font-size:1.65rem;line-height:1.4;margin:.3rem 0 1rem}
+h2{font-size:1.2rem;margin:2.4rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--blush-line)}
+.answer{background:var(--green-bg);border:1px solid var(--green-line);border-radius:12px;padding:1rem 1.2rem;margin:1.2rem 0}
+.answer strong{color:var(--green)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;background:var(--paper);font-size:.95rem}
+th,td{border:1px solid var(--blush-line);padding:.55rem .7rem;text-align:left}
+th{background:var(--blush)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.cta{display:block;text-align:center;background:var(--green);color:#fff;text-decoration:none;
+  border-radius:12px;padding:.9rem 1rem;font-weight:700;margin:1.5rem 0}
+.author{margin-top:3rem;padding:1.2rem;background:var(--paper);border:1px solid var(--blush-line);border-radius:12px;font-size:.95rem}
+.author p{margin:.2rem 0}
+footer{text-align:center;color:var(--ink-soft);font-size:.85rem;padding:2rem 1rem}
+</style>
+</head>
+<body>
+<nav class="top"><div class="in">
+  <a class="brand" href="/">FISDOM 회계 공부</a>
+  <a href="/articles/">회계 글</a>
+  <a href="/bungae/#today">오늘의 문제</a>
+  <a href="https://fisdom.co.kr">FISDOM 홈</a>
+</div></nav>
+<main>
+<p class="kicker">책 6장 · 첫 달을 마감하다 · 2026년 11월 10일</p>
+<h1>분개 한 줄은<br>원장 어디에 적을까?</h1>
+
+<div class="answer">
+  <strong>한 줄 답:</strong> 분개에 나온 <strong>계정마다 그 계정의 원장에</strong> 한 번씩 적습니다. 차변 금액은 차변 칸에, 대변 금액은 대변 칸에 적습니다.
+</div>
+
+<p>분개를 마쳤다면 다음 계단은 원장입니다. 분개를 계정별원장에 옮겨 적는 일을 '전기(轉記)'라고 부릅니다. 어렵게 들리지만 규칙은 두 가지뿐입니다.</p>
+
+<h2>원장은 몇 곳에 적나요?</h2>
+<p>분개 한 줄에 계정이 둘이면 원장도 두 곳입니다. 11월 25일 사무실 월세 100만 원을 통장에서 이체하고 '지급임차료 100만 / 보통예금 100만'으로 분개했다면, 지급임차료 원장과 보통예금 원장에 각각 적습니다.</p>
+
+<h2>어느 칸에 적나요?</h2>
+<p>분개의 자리를 그대로 따라갑니다.</p>
+<table>
+  <tr><th>원장</th><th>날짜</th><th>적요</th><th>차변</th><th>대변</th></tr>
+  <tr><td>지급임차료</td><td>11월 25일</td><td>11월 사무실 월세</td><td class="num">1,000,000</td><td></td></tr>
+  <tr><td>보통예금</td><td>11월 25일</td><td>11월 사무실 월세</td><td></td><td class="num">1,000,000</td></tr>
+</table>
+
+<h2>하나만 적으면 어떻게 되나요?</h2>
+<p>보통예금 원장을 빼먹으면 장부 속 통장 잔액이 실제보다 100만 원 많게 남습니다. 모든 원장을 모은 시산표에서도 차변 합계와 대변 합계가 맞지 않아 어딘가 빠졌다는 신호가 뜹니다. 분개 한 줄이 원장 두 곳에 똑같은 금액으로 나뉘어 들어가기 때문에 시산표로 검산할 수 있는 것입니다.</p>
+
+<h2>실무에서도 손으로 옮겨 적나요?</h2>
+<p>회계 프로그램에 분개를 입력하면 원장에는 자동으로 옮겨집니다. 그래서 원장은 '쓰는' 장부라기보다 '찾아보는' 장부입니다. 통장 잔액이 이상할 때 보통예금 원장을 열면 날짜별로 들어오고 나간 돈이 다 보입니다.</p>
+
+<h2>쉽게 기억하는 법</h2>
+<p>분개는 영수증 한 장, 원장은 계정별 봉투입니다. 월세 영수증을 복사해 '월세 봉투'에는 쓴 돈으로, '통장 봉투'에는 나간 돈으로 한 장씩 넣습니다.</p>
+
+<h2>오늘의 문제로 확인해 보세요</h2>
+<p>월세 분개를 원장에 바르게 옮긴 것을 골라 보세요. 보기마다 해설이 있습니다.</p>
+<a class="cta" href="/bungae/#q/bungae-q-028">원장 옮겨 적기 문제 풀어 보기 →</a>
+<p><a href="/articles/accounting-cycle/">함께 읽기: 분개, 원장, 시산표, 재무제표는 어떤 순서로 만들까?</a></p>
+
+<div class="author">
+  <p><strong>글쓴이 김예희(티나)</strong></p>
+  <p>공인회계사·재무코치. 20년 넘게 개인과 법인의 장부와 돈 관리를 함께해 왔습니다. 《난생처음 세금여행》 《난생처음 금융여행》 저자.</p>
+  <p><a href="https://fisdom.co.kr">FISDOM 홈페이지</a></p>
+</div>
+</main>
+<footer>이 글은 일반적인 회계 원리를 설명하며, 개별 사안은 전문가와 상담하세요. · © FISDOM</footer>
+</body>
+</html>
